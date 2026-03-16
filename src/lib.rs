@@ -1241,51 +1241,49 @@ fn build_manifest() -> GuestManifest {
         },
     };
 
-    GuestManifest {
-        protocol_version: CURRENT_PROTOCOL_VERSION,
-        id: "diaryx.share".into(),
-        name: "Live Share".into(),
-        version: env!("CARGO_PKG_VERSION").into(),
-        description: "Real-time guest sharing for Diaryx workspaces".into(),
-        capabilities: vec![
+    GuestManifest::new(
+        "diaryx.share",
+        "Live Share",
+        env!("CARGO_PKG_VERSION"),
+        "Real-time guest sharing for Diaryx workspaces",
+        vec![
             "workspace_events".into(),
             "file_events".into(),
             "sync_transport".into(),
             "custom_commands".into(),
         ],
-        ui: vec![
-            serde_json::to_value(&share_settings_tab).unwrap_or_default(),
-            serde_json::to_value(&share_tab).unwrap_or_default(),
-        ],
-        commands: vec![
-            "CreateShareSession".into(),
-            "JoinShareSession".into(),
-            "EndShareSession".into(),
-            "SetShareReadOnly".into(),
-            "get_config".into(),
-            "set_config".into(),
-        ],
-        requested_permissions: Some(GuestRequestedPermissions {
-            defaults: serde_json::json!({
-                "plugin_storage": { "include": ["all"], "exclude": [] },
-                "http_requests": { "include": ["all"], "exclude": [] },
-                "read_files": { "include": ["all"], "exclude": [] },
-                "edit_files": { "include": ["all"], "exclude": [] },
-                "create_files": { "include": ["all"], "exclude": [] },
-                "delete_files": { "include": ["all"], "exclude": [] },
-                "execute_commands": {
-                    "include": [
-                        "diaryx.sync:PrepareLiveShareRuntime",
-                        "diaryx.sync:ConnectLiveShareSession",
-                        "diaryx.sync:DisconnectLiveShareSession"
-                    ],
-                    "exclude": []
-                }
-            }),
-            reasons: std::collections::HashMap::new(),
+    )
+    .ui(vec![
+        serde_json::to_value(&share_settings_tab).unwrap_or_default(),
+        serde_json::to_value(&share_tab).unwrap_or_default(),
+    ])
+    .commands(vec![
+        "CreateShareSession".into(),
+        "JoinShareSession".into(),
+        "EndShareSession".into(),
+        "SetShareReadOnly".into(),
+        "get_config".into(),
+        "set_config".into(),
+    ])
+    .requested_permissions(GuestRequestedPermissions {
+        defaults: serde_json::json!({
+            "plugin_storage": { "include": ["all"], "exclude": [] },
+            "http_requests": { "include": ["all"], "exclude": [] },
+            "read_files": { "include": ["all"], "exclude": [] },
+            "edit_files": { "include": ["all"], "exclude": [] },
+            "create_files": { "include": ["all"], "exclude": [] },
+            "delete_files": { "include": ["all"], "exclude": [] },
+            "execute_commands": {
+                "include": [
+                    "diaryx.sync:PrepareLiveShareRuntime",
+                    "diaryx.sync:ConnectLiveShareSession",
+                    "diaryx.sync:DisconnectLiveShareSession"
+                ],
+                "exclude": []
+            }
         }),
-        cli: vec![],
-    }
+        reasons: std::collections::HashMap::new(),
+    })
 }
 
 fn command_response(result: Result<JsonValue, String>) -> CommandResponse {
