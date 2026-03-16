@@ -1,0 +1,29 @@
+[package]
+name = "diaryx_share_extism"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.91"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+diaryx_core = "1.3.2"
+diaryx_sync = "1.3.2"
+diaryx_sync_extism = { git = "https://github.com/diaryx-org/plugin-sync.git" }
+diaryx_plugin_sdk = { version = "0.1.0", features = ["full"] }
+extism-pdk = "1.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+base64 = "0.22"
+log = "0.4"
+getrandom = { version = "0.2", features = ["custom"] }
+zip = { version = "2", default-features = false, features = ["deflate"] }
+
+[patch.crates-io]
+getrandom = { git = "https://github.com/diaryx-org/plugin-sdk.git", subdirectory = "patches/getrandom-0.2" }
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
