@@ -16,6 +16,7 @@ use std::path::{Component, Path, PathBuf};
 
 use diaryx_core::frontmatter;
 use diaryx_core::plugin::{ComponentRef, SettingsField, SidebarSide, UiContribution};
+use diaryx_plugin_sdk::protocol::ServerFunctionDecl;
 use diaryx_sync::{IncomingEvent, SessionAction};
 use diaryx_sync_extism::{binary_protocol, state};
 use extism_pdk::*;
@@ -685,7 +686,7 @@ fn lookup_share_session(
 ) -> Result<(String, bool), String> {
     let response = http_request_compat(
         "GET",
-        &format!("{server}/api/share/sessions/{}", join_code.to_uppercase()),
+        &format!("{server}/sessions/{}", join_code.to_uppercase()),
         &[("Content-Type".to_string(), "application/json".to_string())],
         None,
     )?;
@@ -694,30 +695,30 @@ fn lookup_share_session(
         return Err(http_error(status, &parse_http_body(&response)));
     }
     let body = parse_http_body_json(&response).ok_or("Invalid session response")?;
-    let workspace_id = body
-        .get("workspace_id")
+    let namespace_id = body
+        .get("namespace_id")
         .and_then(|value| value.as_str())
-        .ok_or("Missing workspace_id in session response")?
+        .ok_or("Missing namespace_id in session response")?
         .to_string();
     let read_only = body
         .get("read_only")
         .and_then(|value| value.as_bool())
         .unwrap_or(false);
-    Ok((workspace_id, read_only))
+    Ok((namespace_id, read_only))
 }
 
 fn create_share_session(
     server: &str,
     auth_token: Option<String>,
-    workspace_id: &str,
+    namespace_id: &str,
     read_only: bool,
 ) -> Result<(String, bool), String> {
     let response = http_request_compat(
         "POST",
-        &format!("{server}/api/share/sessions"),
+        &format!("{server}/sessions"),
         &auth_headers(auth_token),
         Some(serde_json::json!({
-            "workspace_id": workspace_id,
+            "namespace_id": namespace_id,
             "read_only": read_only,
         })),
     )?;
@@ -745,7 +746,7 @@ fn delete_share_session(
 ) -> Result<(), String> {
     let response = http_request_compat(
         "DELETE",
-        &format!("{server}/api/share/sessions/{}", join_code.to_uppercase()),
+        &format!("{server}/sessions/{}", join_code.to_uppercase()),
         &auth_headers(auth_token),
         None,
     )?;
@@ -765,7 +766,7 @@ fn update_share_read_only(
 ) -> Result<(), String> {
     let response = http_request_compat(
         "PATCH",
-        &format!("{server}/api/share/sessions/{}", join_code.to_uppercase()),
+        &format!("{server}/sessions/{}", join_code.to_uppercase()),
         &auth_headers(auth_token),
         Some(serde_json::json!({ "read_only": read_only })),
     )?;
@@ -1264,6 +1265,32 @@ fn build_manifest() -> GuestManifest {
         "SetShareReadOnly".into(),
         "get_config".into(),
         "set_config".into(),
+    ])
+    .server_functions(vec![
+        ServerFunctionDecl {
+            name: "create_session".into(),
+            method: "POST".into(),
+            path: "/sessions".into(),
+            description: "Create a live share session for a namespace".into(),
+        },
+        ServerFunctionDecl {
+            name: "get_session".into(),
+            method: "GET".into(),
+            path: "/sessions/{code}".into(),
+            description: "Look up a session by code (unauthenticated, for guests)".into(),
+        },
+        ServerFunctionDecl {
+            name: "update_session".into(),
+            method: "PATCH".into(),
+            path: "/sessions/{code}".into(),
+            description: "Update session read_only flag (owner only)".into(),
+        },
+        ServerFunctionDecl {
+            name: "delete_session".into(),
+            method: "DELETE".into(),
+            path: "/sessions/{code}".into(),
+            description: "End a session (owner only)".into(),
+        },
     ])
     .requested_permissions(GuestRequestedPermissions {
         defaults: serde_json::json!({
