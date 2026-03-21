@@ -9,8 +9,8 @@ publish = false
 crate-type = ["cdylib"]
 
 [dependencies]
-diaryx_core = "1.3.2"
-diaryx_plugin_sdk = { version = "0.3.0", features = ["full"] }
+diaryx_core = "1.4.0"
+diaryx_plugin_sdk = { version = "0.3.1", features = ["full"] }
 extism-pdk = "1.4"
 yrs = "0.25"
 serde = { version = "1.0", features = ["derive"] }
@@ -21,6 +21,8 @@ getrandom = { version = "0.2", features = ["custom"] }
 
 [patch.crates-io]
 getrandom = { git = "https://github.com/diaryx-org/plugin-sdk.git", subdirectory = "patches/getrandom-0.2" }
+diaryx_core = { git = "https://github.com/diaryx-org/diaryx.git", subdirectory = "crates/diaryx_core" }
+diaryx_plugin_sdk = { git = "https://github.com/diaryx-org/plugin-sdk.git" }
 
 [profile.release]
 lto = "fat"

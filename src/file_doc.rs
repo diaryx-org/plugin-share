@@ -5,7 +5,8 @@
 //! TipTap/ProseMirror. Initial content is inserted as a text node; the
 //! editor restructures it into proper AST nodes as users edit.
 
-use yrs::{Doc, ReadTxn, StateVector, Transact, Update, XmlFragment};
+use yrs::updates::decoder::Decode;
+use yrs::{Doc, ReadTxn, StateVector, Transact, Update, XmlFragment, XmlOut};
 
 const FILE_ROOT: &str = "content";
 
@@ -26,7 +27,7 @@ pub fn read_file_doc(doc: &Doc) -> String {
     let txn = doc.transact();
     let mut result = String::new();
     for child in fragment.children(&txn) {
-        if let yrs::XmlNode::Text(text) = child {
+        if let XmlOut::Text(text) = child {
             result.push_str(&text.get_string(&txn));
         }
     }

@@ -7,7 +7,8 @@
 use diaryx_plugin_sdk::host;
 use serde::{Deserialize, Serialize};
 use yrs::types::ToJson;
-use yrs::{Any, Doc, Map, MapPrelim, ReadTxn, StateVector, Transact, TransactionMut, Update};
+use yrs::updates::decoder::Decode;
+use yrs::{Any, Doc, Map, MapPrelim, MapRef, ReadTxn, StateVector, Transact, TransactionMut, Update};
 
 const MANIFEST_ROOT: &str = "manifest";
 
@@ -67,7 +68,7 @@ pub fn build_manifest_from_workspace(workspace_root: &str) -> Doc {
 }
 
 fn insert_entry(
-    map: &Map,
+    map: &MapRef,
     txn: &mut TransactionMut,
     path: &str,
     parent: Option<&str>,

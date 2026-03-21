@@ -20,7 +20,7 @@ use diaryx_plugin_sdk::protocol::ServerFunctionDecl;
 use extism_pdk::*;
 use serde_json::Value as JsonValue;
 
-use session::{ShareRole, ShareSession};
+use session::ShareRole;
 
 // ============================================================================
 // HTTP compat helpers
