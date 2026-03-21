@@ -6,7 +6,7 @@
 //! editor restructures it into proper AST nodes as users edit.
 
 use yrs::updates::decoder::Decode;
-use yrs::{Doc, ReadTxn, StateVector, Transact, Update, XmlFragment, XmlOut};
+use yrs::{Doc, GetString, ReadTxn, StateVector, Transact, Update, XmlFragment, XmlOut};
 
 const FILE_ROOT: &str = "content";
 

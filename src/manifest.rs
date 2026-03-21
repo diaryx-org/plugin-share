@@ -12,6 +12,7 @@ use yrs::{Any, Doc, Map, MapPrelim, MapRef, ReadTxn, StateVector, Transact, Tran
 
 const MANIFEST_ROOT: &str = "manifest";
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ManifestEntry {
     pub path: String,
@@ -84,6 +85,7 @@ fn insert_entry(
 }
 
 /// Read all manifest entries from a yrs Doc.
+#[allow(dead_code)]
 pub fn read_manifest_entries(doc: &Doc) -> Vec<ManifestEntry> {
     let map = doc.get_or_insert_map(MANIFEST_ROOT);
     let txn = doc.transact();

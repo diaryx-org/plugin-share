@@ -15,6 +15,7 @@ pub enum ShareRole {
 
 use serde::{Deserialize, Serialize};
 
+#[allow(dead_code)]
 pub struct ShareSession {
     pub role: ShareRole,
     pub namespace_id: String,
